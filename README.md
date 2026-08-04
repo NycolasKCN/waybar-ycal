@@ -1,3 +1,5 @@
+This repo is an fork of https://github.com/yagybaba/waybar-ycal
+
 # waybar-ycal
 
 A Google Calendar + Google Tasks popup widget for [Waybar](https://github.com/Alexays/Waybar) on Wayland.

@@ -19,14 +19,27 @@ import tomllib
 
 CACHE_FILE = os.path.expanduser('~/.cache/waybar-ycal/events.json')
 PID_FILE = os.path.expanduser('~/.cache/waybar-ycal/popup.pid')
-THEME_FILE = os.path.expanduser('~/.config/omarchy/current/theme/colors.toml')
+THEME_FILE = os.path.expanduser('~/.config/waybar-ycal/colors.toml')
 CREDENTIALS_FILE = os.path.expanduser('~/.config/waybar-ycal/credentials.json')
 TOKEN_FILE = os.path.expanduser('~/.cache/waybar-ycal/token.json')
 SYNC_INTERVAL_SEC = 15 * 60  # 15 minutes
+START_SUNDAY = True 
+
+WEEKEND_DAYS = ["Sab", "Dom"]
+START_MON_DAY_NAMES = [day.capitalize() for day in calendar.day_abbr]
+START_SUN_DAY_NAMES = [START_MON_DAY_NAMES[-1]] + START_MON_DAY_NAMES[:-1]
 
 # Nerd Font family used for icon buttons (refresh + edit).
 # Change this to match whichever Nerd Font you have installed.
-NERD_FONT = "JetBrainsMonoNL Nerd Font, JetBrainsMono Nerd Font, Symbols Nerd Font"
+NERD_FONT = "NotoSans NFP"
+SCOPES = [
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/tasks',
+]
+
+# Nerd Font family used for icon buttons (refresh + edit).
+# Change this to match whichever Nerd Font you have installed.
+NERD_FONT = "NotoSans NFP"
 SCOPES = [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/tasks',
@@ -479,19 +492,20 @@ class CalendarPopup(Gtk.ApplicationWindow):
         self.grid.set_column_spacing(0)
         self.grid.set_column_homogeneous(True)
 
-        day_names = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        day_names = START_SUN_DAY_NAMES if START_SUNDAY else START_MON_DAY_NAMES
         for col, name in enumerate(day_names):
             lbl = Gtk.Label(label=name)
             lbl.add_css_class('weekday')
-            if col >= 5:
+            if name in WEEKEND_DAYS: 
                 lbl.add_css_class('weekend-label')
             lbl.set_size_request(28, 18)
             self.grid.attach(lbl, col, 0, 1, 1)
 
         first = datetime.date(self.year, self.month, 1)
-        start = first - datetime.timedelta(days=first.weekday())
+        delta_days = (first.weekday()+1) % 7 if START_SUNDAY else first.weekday()
+        start = first - datetime.timedelta(days=delta_days)
         last = datetime.date(self.year, self.month, calendar.monthrange(self.year, self.month)[1])
-        weeks = math.ceil((first.weekday() + last.day) / 7)
+        weeks = math.ceil((delta_days + last.day) / 7)
         total_days = weeks * 7
 
         for i in range(total_days):
@@ -748,7 +762,7 @@ class CalendarPopup(Gtk.ApplicationWindow):
           background: rgba(0, 0, 0, 0.01);
       }}
       .popup-bg {{
-          background: {hex_to_rgba(bg, 0.92)};
+          background: {hex_to_rgba(bg, 0.75)};
           border-radius: 12px;
           border: 1px solid {hex_to_rgba(accent, 0.35)};
           padding: 10px;

@@ -49,6 +49,11 @@ pip install --user google-api-python-client
 
 > **gtk4-layer-shell** is required and may need to be built from source on Ubuntu. See [gtk4-layer-shell](https://github.com/wmww/gtk4-layer-shell).
 
+**Arch based systems:**
+```bash
+sudo pacman -S gtk4 gtk4-layer-shell python python-cryptography python-gobject python-google-api-python-client python-google-auth python-google-auth-oauthlib
+```
+
 **2. Clone and install**
 
 ```bash

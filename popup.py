@@ -37,15 +37,6 @@ SCOPES = [
     'https://www.googleapis.com/auth/tasks',
 ]
 
-# Nerd Font family used for icon buttons (refresh + edit).
-# Change this to match whichever Nerd Font you have installed.
-NERD_FONT = "NotoSans NFP"
-SCOPES = [
-    'https://www.googleapis.com/auth/calendar.readonly',
-    'https://www.googleapis.com/auth/tasks',
-]
-
-
 def _get_credentials():
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
@@ -204,6 +195,7 @@ class ClickShield(Gtk.Window):
         self.set_decorated(False)
         self.add_css_class('click-shield')
         Gtk4LayerShell.init_for_window(self)
+        Gtk4LayerShell.set_namespace(self, "ycal-shield")
         Gtk4LayerShell.set_layer(self, Gtk4LayerShell.Layer.TOP)
         for edge in [Gtk4LayerShell.Edge.TOP, Gtk4LayerShell.Edge.BOTTOM,
                      Gtk4LayerShell.Edge.LEFT, Gtk4LayerShell.Edge.RIGHT]:
@@ -215,6 +207,7 @@ class ClickShield(Gtk.Window):
         box.set_vexpand(True)
         self.set_child(box)
         gesture = Gtk.GestureClick()
+        gesture.set_button(0)
         gesture.connect('pressed', lambda *_: on_click())
         box.add_controller(gesture)
         self.set_visible(False)
@@ -245,6 +238,7 @@ class CalendarPopup(Gtk.ApplicationWindow):
         self.connect("close-request", lambda *_: self._hide())
 
         Gtk4LayerShell.init_for_window(self)
+        Gtk4LayerShell.set_namespace(self, "ycal")
         Gtk4LayerShell.set_layer(self, Gtk4LayerShell.Layer.OVERLAY)
         Gtk4LayerShell.set_anchor(self, Gtk4LayerShell.Edge.TOP, True)
         Gtk4LayerShell.set_anchor(self, Gtk4LayerShell.Edge.LEFT, False)
